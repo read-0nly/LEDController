@@ -27,7 +27,7 @@ And here's what the device looks like in the interface
 
 Alert will alternate between the last color set and the inverse of that color - so white will just flash on and off, red will bounce to cyan, etc. Pretty jarring, does what it should.
 
-The server, if turned on, will host a page at port :8080 locally from which you can trigger the alert, start ticking, and kill the server (turn it back off - app keeps running unaffected)
+The server, if turned on, will host a page at port :8080 locally from which you can trigger the alert, start ticking, and kill the server (turn it back off - app keeps running unaffected). Requires running as admin.
 
 People on your LAN can then use this page to trigger the light alerts and get your attention if for instance you've got headphones on. If you visit /StartAlert directly it'll do the same so it's also possible to make your own stuff trigger the alert based on external events (new messages in discord/fb, calendar events, you name it - if you can make code detect the event you want and send a request to that url when that event happens, you're golden)
 
