@@ -1,0 +1,12 @@
+First stable release - scans for devices on BLE, allows for saving device identifiers and protocols for easier reload, scan can be stopped when devices found.
+
+Right now it only has Time Gradient as a behavior. Alert is a base behavior all behaviors inherit (though this can be supressed by not doing base.tick if necessary)
+
+Time gradient takes the first row of pixels in a bmp, find the current minute of the day's pixel index where the whole width is 24hrs, then the next minute's index. The colors are then lerped based on how many seconds deep into the current minute we are - so colors are transitioned smoothly over the course of the minute
+
+the bmp is ideally 1 pixel high 1440 pixels wide. Then each minute of the day is colored in. The usecase for me is a sort of fl.ux for ambient lighting - i have a gradient that goes cold white when i'm supposed to wake up, stays that way over my shift, then decays to yellows, reds, and finally a really dim red so i can see if i wake up at night but it doesn't keep me awake.
+
+the server button enables a webhost - visit localhost:8080 or <your LAN ip>:8080 to then trigger alert or tick from any device in the home - useful for people to be able to get your attention! There is no security of any kind on this so use at your own risk,
+
+These cheap LEDs often don't follow their own naming convention so it might take some trial and error to find your LEDs and the right protocol. They need to be either happylighting or hilighting, if you have LEDs that use a different android app file an issue with a link to the google app and i'll see what i can do to implement it.
+
