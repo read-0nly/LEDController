@@ -13,11 +13,15 @@ Right now only Time Gradient is implemented so all devices will default to that 
 
 The time gradient behavior will launch a file selector on Init. Select a bitmap, it will then find the pixel index of the current minute of the day and the next minute based on the image width. Ideally, the image should be 1440x1, but can be anything. It then lerps the color between the two pixels based on how many seconds deep we are in the current minute, for a relatively smooth transition.
 
-It accepts only an hour offset as parameter, no ; or anything - it's just doing int.parse without checking right now so if you don't listen it'll crash. But it accepts negative offsets too
+It accepts only an hour offset as parameter, no ; or anything - it's just doing int.parse without checking right now so if you don't listen it'll crash. But it accepts negative offsets too. The parameter field needs to be filled before clicking init - if you do it backwards just click init again and cancel the file selector, it'll apply the new value to the offset but keep the same image.
 
 For instance, here's the time gradient I use (notice how it spits in the face of the dimensions above). I use an offset of -8, so it starts the loop in the dark red at midnight, does that for 8 hours, then wraps araound to the left-hand side when it reaches 8am and I get blasted by white light. Very roommate-friendly way to wake up as long as you don't actually share the room. Basically, using this, the offset is negative the time you plan to wake up.
 
 <img width="96" height="36" alt="t4fdsggsd" src="https://github.com/user-attachments/assets/20fcd09d-4973-4d14-bd8e-a8d6a75030ee" />
+
+And here's what the device looks like in the interface
+
+<img width="136" height="152" alt="image" src="https://github.com/user-attachments/assets/79a79c04-1380-406e-8aaf-73b867444fa2" />
 
 Alert will alternate between the last color set and the inverse of that color - so white will just flash on and off, red will bounce to cyan, etc. Pretty jarring, does what it should.
 
