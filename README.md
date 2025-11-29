@@ -9,7 +9,7 @@ Replaces these apps in particular:
 I could try to explain the whole UI or I could just give you a really shitty mspaint breakdown, here you go
 <img width="752" height="687" alt="image" src="https://github.com/user-attachments/assets/af24d62f-2ef2-491d-9efe-e792146c6f1b" />
 
-Right now only Time Gradient is implemented so all devices will default to that behavior. If there's no protocol, nothing gets sent on writecolor. So if it's not your lights, leave it on None and leave the Tick selector unchecked to not blast it with weird traffic
+Right now only Time Gradient is implemented so all devices will default to that behavior. If there's no protocol, nothing gets sent on writecolor. So if it's not your lights, leave it on None and leave the Tick selector unchecked to not blast it with weird traffic. Hit the X button top-right to then hide it so it doesn't clutter your interface.
 
 The time gradient behavior will launch a file selector on Init. Select a bitmap, it will then find the pixel index of the current minute of the day and the next minute based on the image width. Ideally, the image should be 1440x1, but can be anything. It then lerps the color between the two pixels based on how many seconds deep we are in the current minute, for a relatively smooth transition.
 
