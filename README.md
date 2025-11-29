@@ -1,5 +1,5 @@
 # LEDController
-Control HappyLighting and HiLighting protocol BLE LED lights
+Control HappyLighting and HiLighting protocol BLE LED lights (If you have lights using different protocols, send me the Google Play link to the app in issues and I'll see what I can do)
 
 Replaces these apps in particular:
 
