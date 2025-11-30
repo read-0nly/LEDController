@@ -35,4 +35,4 @@ Save file format is very dumb atm. Example line from savedLEDs.txt
 
 Bluetooth FF:FF:FF:FF:FF:FF;99999999999999;HappyLighting;False
 
-The format is "NAME;ADDRESS;PROTOCOL;HIDDEN". One device per line. Setting the last value to "True" will make it so the BLE watcher immediately if ors that device if it's seen - a way to get rid of recurring devices that aren't your lights. Some devices rotate their address so they'll keep popping up - i don't have a good solution for that atm.
+The format is "NAME;ADDRESS;PROTOCOL;HIDDEN". One device per line. Setting the last value to "True" will make it so the BLE watcher immediately ignores that device if it's seen - a way to get rid of recurring devices that aren't your lights. Some devices rotate their address so they'll keep popping up - i don't have a good solution for that atm.
