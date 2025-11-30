@@ -36,3 +36,11 @@ Save file format is very dumb atm. Example line from savedLEDs.txt
 Bluetooth FF:FF:FF:FF:FF:FF;99999999999999;HappyLighting;False
 
 The format is "NAME;ADDRESS;PROTOCOL;HIDDEN". One device per line. Setting the last value to "True" will make it so the BLE watcher immediately ignores that device if it's seen - a way to get rid of recurring devices that aren't your lights. Some devices rotate their address so they'll keep popping up - i don't have a good solution for that atm.
+
+## Future plans
+- Audio-reactive ambient lighting
+- Pixel-sampling (sample the edges up left and right, drive a set of lights one each side of the room - walk into a cave in a game and the whole room goes dark, go outside and the whole room light up
+- Set simple color (should have started with this lol)
+- Load custom behavior dlls (for extra modularity)
+- Preserve tick state, behavior, parameters on save/load
+- command-line driving
