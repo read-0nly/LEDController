@@ -55,12 +55,15 @@ namespace HappyLighting
         public GattCharacteristic rx = null;
         public DeviceControl control = null;
         public Protocols protocol = Protocols.None;
+        public string behavior = "";
+        public string behavior_param = "";
+        public bool ticking = false;
         public bool hidden = false;
         public bool isLoaded = false;
 
         public string Serialize()
         {
-            return name + ";" + mac + ";" + protocol.ToString() + ";" + hidden;
+            return name + ";" + mac + ";" + protocol.ToString() + ";" + hidden + ";" + ticking + ";" + behavior + ";" + behavior_param;
         }
         public bool Deserialize(string s)
         {
@@ -70,6 +73,10 @@ namespace HappyLighting
             mac = values[1];
             Enum.TryParse<Protocols>(values[2], out protocol);
             bool.TryParse(values[3], out hidden);
+            bool.TryParse(values[4], out ticking);
+            if (values.Length < 6) { return true; }
+            behavior= values[5];
+            behavior_param = values[6];
             return true;
         }
 
@@ -102,7 +109,7 @@ namespace HappyLighting
         {
             lock (device)
             {
-                if (!BLEHandler.deviceList.Contains(this)) { return false; }
+                if (!BLEHandler.deviceList.ContainsValue(this)) { return false; }
                 if (!Task.Run(() => device.RequestAccessAsync()).Wait(5000) || !Task.Run(() => device.GetGattServicesAsync()).Wait(5000) || device.GattServices == null)
                 {
                     tx = null;

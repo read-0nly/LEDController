@@ -35,10 +35,22 @@ namespace HappyLighting
                 }
             }
             comboBox1.Items.Add("Time Gradient");
-            ledBehavior = new TimeGradientBehavior(ledDevice);
+            comboBox1.Items.Add("Static Color");
+            comboBox1.SelectedText = dev.behavior;
+            ledBehavior = new LEDBehavior(ledDevice);
+
+            setBehavior(dev.behavior);
+            if(dev.behavior == "Time Gradient")
+            {
+
+                (ledBehavior as TimeGradientBehavior).gradient = (Bitmap)Bitmap.FromFile(dev.behavior_param);
+                ledBehavior.ready = dev.ticking;
+                checkBox1.Checked = dev.ticking;
+            }
             width = Size.Width;
             height = Size.Height;
 
+            //Enum.TryParse<LEDDevice.Protocols>(comboBox2.SelectedItem as String, true, out ledDevice.protocol);
         }
 
         private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
@@ -50,6 +62,13 @@ namespace HappyLighting
         {
 
             ledBehavior.Init(null, textBox1.Text);
+
+            if (ledBehavior is TimeGradientBehavior)
+            {
+                ledDevice.behavior = "Time Gradient";
+                ledDevice.behavior_param = (ledBehavior as TimeGradientBehavior).path;
+                ledBehavior.ready = true;
+            }
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -64,10 +83,11 @@ namespace HappyLighting
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
             isReady = checkBox1.Checked;
+            ledDevice.ticking = checkBox1.Checked;
         }
         public void tickBehavior()
         {
-            if (ledBehavior !=null && ledBehavior.ready)
+            if (ledBehavior != null && ledBehavior.ready)
             {
                 if (ledDevice.tx == null)
                 {
@@ -97,10 +117,35 @@ namespace HappyLighting
         {
             this.Visible = false;
             ledDevice.tx = null;
+            BLEHandler.deviceList.Remove(ledDevice.device.BluetoothAddress);
             ledDevice.device = null;
             ledDevice.hidden = true;
-            BLEHandler.deviceList.Remove(ledDevice);
             isReady = false;
+
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            setBehavior(comboBox1.SelectedItem.ToString());
+
+        }
+        private void setBehavior(string s)
+        {
+            switch (s)
+            {
+                case "Time Gradient":
+                    if (!(ledBehavior is TimeGradientBehavior))
+                    {
+                        ledBehavior = new TimeGradientBehavior(ledDevice);
+                    }
+                    break;
+                case "Static Color":
+                    if (!(ledBehavior is ColorStaticBehavior))
+                    {
+                        ledBehavior = new ColorStaticBehavior(ledDevice);
+                    }
+                    break;
+            }
 
         }
     }

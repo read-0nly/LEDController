@@ -33,7 +33,9 @@
             timer1 = new System.Windows.Forms.Timer(components);
             flowLayoutPanel2 = new FlowLayoutPanel();
             button4 = new Button();
+            panel1 = new Panel();
             button1 = new Button();
+            trackBar1 = new TrackBar();
             button2 = new Button();
             button5 = new Button();
             button3 = new Button();
@@ -41,7 +43,10 @@
             button7 = new Button();
             button8 = new Button();
             BehaviorTick = new System.Windows.Forms.Timer(components);
+            KillTimer = new System.Windows.Forms.Timer(components);
             flowLayoutPanel2.SuspendLayout();
+            panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)trackBar1).BeginInit();
             SuspendLayout();
             // 
             // flowLayoutPanel1
@@ -63,7 +68,7 @@
             // 
             flowLayoutPanel2.BackColor = Color.FromArgb(64, 64, 64);
             flowLayoutPanel2.Controls.Add(button4);
-            flowLayoutPanel2.Controls.Add(button1);
+            flowLayoutPanel2.Controls.Add(panel1);
             flowLayoutPanel2.Controls.Add(button2);
             flowLayoutPanel2.Controls.Add(button5);
             flowLayoutPanel2.Controls.Add(button3);
@@ -89,17 +94,42 @@
             button4.UseVisualStyleBackColor = true;
             button4.Click += button4_Click;
             // 
+            // panel1
+            // 
+            panel1.BackColor = Color.Transparent;
+            panel1.Controls.Add(button1);
+            panel1.Controls.Add(trackBar1);
+            panel1.Location = new Point(72, 3);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(63, 33);
+            panel1.TabIndex = 0;
+            // 
             // button1
             // 
+            button1.Dock = DockStyle.Top;
             button1.FlatStyle = FlatStyle.Flat;
             button1.ForeColor = SystemColors.ButtonHighlight;
-            button1.Location = new Point(72, 3);
+            button1.Location = new Point(0, 0);
+            button1.Margin = new Padding(0);
             button1.Name = "button1";
-            button1.Size = new Size(63, 33);
+            button1.Size = new Size(63, 25);
             button1.TabIndex = 0;
             button1.Text = "Tick";
             button1.UseVisualStyleBackColor = true;
             button1.Click += button1_Click;
+            // 
+            // trackBar1
+            // 
+            trackBar1.BackColor = SystemColors.ControlDarkDark;
+            trackBar1.LargeChange = 10;
+            trackBar1.Location = new Point(0, 20);
+            trackBar1.Maximum = 100;
+            trackBar1.Name = "trackBar1";
+            trackBar1.Size = new Size(63, 45);
+            trackBar1.TabIndex = 1;
+            trackBar1.TickFrequency = 10;
+            trackBar1.Value = 100;
+            trackBar1.Scroll += trackBar1_Scroll;
             // 
             // button2
             // 
@@ -139,16 +169,15 @@
             // 
             // button6
             // 
-            button6.Enabled = false;
             button6.FlatStyle = FlatStyle.Flat;
             button6.ForeColor = SystemColors.ButtonHighlight;
             button6.Location = new Point(348, 3);
             button6.Name = "button6";
             button6.Size = new Size(63, 33);
             button6.TabIndex = 4;
-            button6.Text = "XXXX";
+            button6.Text = "ULTRA";
             button6.UseVisualStyleBackColor = true;
-            button6.Visible = false;
+            button6.Click += button6_Click;
             // 
             // button7
             // 
@@ -181,6 +210,10 @@
             BehaviorTick.Interval = 1000;
             BehaviorTick.Tick += BehaviorTick_Tick;
             // 
+            // KillTimer
+            // 
+            KillTimer.Tick += KillTimer_Tick;
+            // 
             // DeviceManager
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -197,6 +230,9 @@
             FormClosing += DeviceManager_FormClosing;
             SizeChanged += DeviceManager_SizeChanged;
             flowLayoutPanel2.ResumeLayout(false);
+            panel1.ResumeLayout(false);
+            panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)trackBar1).EndInit();
             ResumeLayout(false);
         }
 
@@ -214,5 +250,8 @@
         private Button button6;
         private Button button7;
         private Button button8;
+        private Panel panel1;
+        private TrackBar trackBar1;
+        private System.Windows.Forms.Timer KillTimer;
     }
 }

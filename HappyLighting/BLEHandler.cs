@@ -8,6 +8,7 @@ using Windows.Devices.Bluetooth.GenericAttributeProfile;
 using Windows.Devices.Bluetooth;
 using Windows.Foundation;
 using System.Diagnostics.Eventing.Reader;
+using Windows.Devices.HumanInterfaceDevice;
 
 
 namespace HappyLighting
@@ -15,7 +16,7 @@ namespace HappyLighting
     class BLEHandler
 
     {
-        public static HashSet<LEDDevice> deviceList = new HashSet<LEDDevice>();
+        public static Dictionary<ulong,LEDDevice> deviceList = new Dictionary<ulong, LEDDevice>();
         public static HashSet<LEDDevice> loadedDevices = new HashSet<LEDDevice>();
         public static HashSet<string> seen_macs = new HashSet<string>();
         public static bool keeprunning = false;
@@ -49,11 +50,19 @@ namespace HappyLighting
                 {
                     lock (deviceList)
                     {
-                        if (!deviceList.Contains(di) && !seen_macs.Contains(di.device.BluetoothAddress.ToString()))
+                        if (deviceList.ContainsKey(di.device.BluetoothAddress) &&
+                            deviceList[di.device.BluetoothAddress].hidden != true)
                         {
-                            deviceList.Add(di);
-                            seen_macs.Add(di.device.BluetoothAddress.ToString());
+                            deviceList[di.device.BluetoothAddress].device = device;
+                        }
+                        else
+                        {
+                            if (!seen_macs.Contains(di.device.BluetoothAddress.ToString()))
+                            {
+                                deviceList.Add(di.device.BluetoothAddress,di);
+                                seen_macs.Add(di.device.BluetoothAddress.ToString());
 
+                            }
                         }
                     }
 

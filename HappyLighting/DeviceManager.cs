@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -14,6 +15,7 @@ namespace HappyLighting
     public partial class DeviceManager : Form
     {
         public static HashSet<LEDDevice> deviceList = new HashSet<LEDDevice>();
+        public static int killDelay = -1;
 
         public DeviceManager()
         {
@@ -37,7 +39,12 @@ namespace HappyLighting
                 File.Create("savedLEDs.txt");
             }
             BLEHandler.exec(false, BLEHandler.Watcher_Received);
-
+            trackBar1.Value = 100;
+            if(killDelay> 0) {
+                KillTimer.Interval= killDelay;
+                KillTimer.Start();
+            }
+            swapTick(); swapScan(); 
         }
 
 
@@ -45,18 +52,30 @@ namespace HappyLighting
         public static bool StopTick = false;
         public static bool StartAlert = false;
         public static bool StopAlert = false;
+        public static bool BootAlert = false;
         private void timer1_Tick(object sender, EventArgs e)
         {
             lock (BLEHandler.deviceList)
             {
-                foreach (LEDDevice device in BLEHandler.deviceList)
+                foreach (ulong deviceKey in BLEHandler.deviceList.Keys)
                 {
-                    if (!deviceList.Contains(device))
+                    if (BLEHandler.deviceList[deviceKey].name.StartsWith("Bluetooth "))
                     {
-                        deviceList.Add(device);
-                        device.control = new DeviceControl(device);
-                        this.flowLayoutPanel1.Controls.Add(device.control);
+                        continue;
+                    }
+                    if (!deviceList.Contains(BLEHandler.deviceList[deviceKey]))
+                    {
+                        deviceList.Add(BLEHandler.deviceList[deviceKey]);
+                        BLEHandler.deviceList[deviceKey].control = new DeviceControl(BLEHandler.deviceList[deviceKey]);
+                        this.flowLayoutPanel1.Controls.Add(BLEHandler.deviceList[deviceKey].control);
+                        BLEHandler.deviceList[deviceKey].control.ledBehavior.alerting = button4bool;
 
+                    }
+                    else if (BLEHandler.deviceList[deviceKey].control == null || !this.flowLayoutPanel1.Controls.Contains(BLEHandler.deviceList[deviceKey].control))
+                    {
+
+                        BLEHandler.deviceList[deviceKey].control = new DeviceControl(BLEHandler.deviceList[deviceKey]);
+                        this.flowLayoutPanel1.Controls.Add(BLEHandler.deviceList[deviceKey].control);
                     }
                 }
             }
@@ -91,6 +110,16 @@ namespace HappyLighting
                 button5.ForeColor = Color.Cyan;
 
             }
+
+
+            foreach (LEDDevice device in deviceList.ToArray())
+            {
+                if (device.hidden)
+                {
+                    deviceList.Remove(device);
+                }
+            }
+
         }
 
         private void DeviceManager_SizeChanged(object sender, EventArgs e)
@@ -123,7 +152,7 @@ namespace HappyLighting
             }
 
         }
-        private void swapAlert(bool? switchbool = null)
+        public void swapAlert(bool? switchbool = null)
         {
             if (switchbool != null)
             {
@@ -171,8 +200,9 @@ namespace HappyLighting
             }
         }
         bool scanning = false;
-        private void button2_Click(object sender, EventArgs e)
+        private void swapScan()
         {
+
             if (scanning)
             {
                 BLEHandler.stopWatch();
@@ -188,6 +218,10 @@ namespace HappyLighting
                 button2.BackColor = Color.Black;
                 scanning = true;
             }
+        }
+        private void button2_Click(object sender, EventArgs e)
+        {
+            swapScan();
 
         }
 
@@ -249,6 +283,59 @@ namespace HappyLighting
 
             }
 
+        }
+        bool button6bool = false;
+        private void button6_Click(object sender, EventArgs e)
+        {
+            if (button6bool)
+            {
+                button6.ForeColor = Color.White;
+                button6.BackColor = Color.Transparent;
+                button6bool = false;
+            }
+            else
+            {
+
+                button6.ForeColor = Color.Lime;
+                button6.BackColor = Color.Black;
+                button6bool = true;
+                ultramode();
+            }
+
+        }
+
+        private void ultramode()
+        {
+            int counter = 0;
+            while (button6bool)
+            {
+
+                foreach (LEDDevice device in deviceList)
+                {
+                    if (device.hidden == false && device.control != null && device.control.isReady)
+                    {
+                        device.control.tickBehavior();
+                    }
+
+                }
+                counter = (counter + 1) % 2;
+                if (counter == 0)
+                {
+                    Application.DoEvents();
+                }
+                Thread.Sleep(50);
+            }
+            int x = 0;
+        }
+
+        private void trackBar1_Scroll(object sender, EventArgs e)
+        {
+            BehaviorTick.Interval = (trackBar1.Value * 10) + 1;
+        }
+
+        private void KillTimer_Tick(object sender, EventArgs e)
+        {
+            Application.Exit();
         }
     }
 }

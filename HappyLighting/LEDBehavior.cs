@@ -33,38 +33,62 @@ namespace HappyLighting
             return "Not a real behavior";
         }
         public bool alerting;
-        bool alertstate;
         public virtual void Alert()
         {
-            if (alertstate)
+            Color c = Color.FromArgb(255- lastColor.R, 255 - lastColor.G, 255 - lastColor.B);
+            try
             {
-                Color c = Color.FromArgb(255- lastColor.R, 255 - lastColor.G, 255 - lastColor.B);
-                alertstate = false;
-                try
-                {
-                    device.writeColor((int)c.R, (int)c.G, (int)c.B);
-
-                }
-                catch (Exception ex) { }
+                device.writeColor((int)c.R, (int)c.G, (int)c.B);
+                lastColor = c;
 
             }
-            else
-            {
-                Color c = lastColor;
-                alertstate = true;
-                try
-                {
-                    device.writeColor((int)c.R, (int)c.G, (int)c.B);
-                }
-                catch (Exception ex) { }
+            catch (Exception ex) { }
 
-            }
         }
+    }
+    public class ColorStaticBehavior : LEDBehavior
+    {
+        Color setColor;
+        public ColorStaticBehavior(LEDDevice dev) : base(dev)
+        {
+        }
+
+        public override void Init(Object arg, string param = "")
+        {
+            ColorDialog cdlg = new ColorDialog();
+            if (cdlg.ShowDialog() == DialogResult.OK && (device != null))
+            {
+                setColor = cdlg.Color;
+
+            }
+            ready = true;
+        }
+
+        public override string Tick(Object arg)
+        {
+            base.Tick(arg);
+            if (alerting) { return "Alerting"; }
+            if (setColor != lastColor)
+            {
+                try
+                {
+                    device.writeColor((int)setColor.R, (int)setColor.G, (int)setColor.B);
+                    lastColor = setColor;
+                }
+                catch (Exception ex) { }
+
+            }
+
+            return "Static Color";
+        }
+
+
     }
 
     public class TimeGradientBehavior : LEDBehavior
     {
-        Bitmap gradient;
+        public Bitmap gradient;
+        public string path;
         int offset = 0;
 
 
@@ -97,13 +121,14 @@ namespace HappyLighting
             if (openFileDialog1.ShowDialog() == DialogResult.OK && (device != null) && openFileDialog1.FileName != "" && File.Exists(openFileDialog1.FileName))
             {
                 gradient = (Bitmap)Bitmap.FromFile(openFileDialog1.FileName);
+                path = openFileDialog1.FileName;
                 ready = true;
             }
         }
         public override string Tick(Object arg)
         {
             base.Tick(arg);
-            if (alerting) { return "Alertring"; }
+            if (alerting) { return "Alerting"; }
             int currentTime = ((DateTime.Now.Hour + offset) * 60 ) + (DateTime.Now.Minute );
             int idx = (int)Math.Round((
                     currentTime / (24 * 60.0)) *
@@ -118,7 +143,7 @@ namespace HappyLighting
             Color c = gradient.GetPixel(idx, 0);
             Color c2 = gradient.GetPixel(idx2, 0);
 
-            double fac1 = ((DateTime.Now.Second) / 60.0);
+            double fac1 = (((DateTime.Now.Second) * 1000.0)+DateTime.Now.Millisecond)/(60*1000.0);
             double fac2 = 1 - fac1;
 
             c = Color.FromArgb(
@@ -126,12 +151,15 @@ namespace HappyLighting
                 (int)((c.G * fac2) + (c2.G * fac1)),
                 (int)((c.B * fac2) + (c2.B * fac1))
                 );
-            lastColor = c;
-            try
+            if (c != lastColor)
             {
-                device.writeColor((int)c.R, (int)c.G, (int)c.B);
+                try
+                {
+                    device.writeColor((int)c.R, (int)c.G, (int)c.B);
+                    lastColor = c;
+                }
+                catch (Exception ex) { }
             }
-            catch (Exception ex) { }
             return (((DateTime.Now.Hour * 60.0f) + DateTime.Now.Minute)).ToString();
 
         }
